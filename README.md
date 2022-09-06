@@ -1,92 +1,207 @@
-# ecom-sdk-java
+# Ecommerce payment API SDK
 
+SDK модуль для внедрения эквайринга Райффайзенбанка.
 
+## Установка и подключение
 
-## Getting started
+Требования:
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- Java 8+
+- Apache Maven
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Для подключения SDK требуется:
 
-## Add your files
+- Создать в корне проекта каталог с названием "dependencies".
+- Поместить в созданный каталог файл .jar и [pom.xml по ссылке](/docs/dependencies/pom.xml).
+- pom.xml __своего__ проекта поместить следующее:
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+~~~
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
-```
-cd existing_repo
-git remote add origin https://gitlabci.raiffeisen.ru/acquiring/sdk/ecom-sdk-java.git
-git branch -M master
-git push -uf origin master
-```
+    <dependencies>
+        <dependency>
+            <groupId>raiffeisen</groupId>
+            <artifactId>ecom-sdk-java</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
 
-## Integrate with your tools
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <groupId>raiffeisen</groupId>
+                    <artifactId>ecom-sdk-java</artifactId>
+                    <version>1.0.0</version>
+                    <packaging>jar</packaging>
+                    <file>dependencies/ecom-sdk-java-1.0.0.jar</file>
+                    <generatePom>false</generatePom>
+                    <pomFile>dependencies/pom.xml</pomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-jar-lib</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+~~~
 
-- [ ] [Set up project integrations](https://gitlabci.raiffeisen.ru/acquiring/sdk/ecom-sdk-java/-/settings/integrations)
+- Выполнить команды в maven:
+    + validate(`mvn validate`)
+    + install(`mvn install`)
 
-## Collaborate with your team
+## Документация
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+**Raiffeisenbank e-commerce API: https://pay.raif.ru/doc/ecom.html#tag/js-sdk
 
-## Test and Deploy
+## Клиент API
 
-Use the built-in continuous integration in GitLab.
+Для использования SDK требуется секретный ключ `secretKey`, подробности
+<a href="https://pay.raif.ru/doc/ecom.html#section/API/Avtorizaciya">в документации</a>
+и
+<a href="https://www.raiffeisen.ru/corporate/management/commerce/">сайте банка</a>.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+~~~ java
+String secretKey = "***";
 
-***
+EcomClient client = new EcomClient(secretKey);
+~~~
 
-# Editing this README
+Параметры конструктора и свойства клиента:
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!).  Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+- `host` - хост api, по умолчанию https://e-commerce.raiffeisen.ru, доступ на чтение и запись;
+- `secretKey` - секретный ключ, обязательный, доступ только на запись;
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Клиент может вернуть следующие типы исключений:
 
-## Name
-Choose a self-explaining name for your project.
+- `RequestException` - ошибка сетевого взаимодействия
+- `MappingException` - ошибки при маппирование данных
+- `CryptoException` - ошибка шифрования данных
+- `ValidationException` - ошибка валидации данных
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+## Примеры
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### Получение информации о статусе транзакции
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Метод `getTransaction` возвращает информацию о статусе транзакции.
+В параметрах нужно указать:
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+- `orderId` - идентификатор заказа.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+~~~ java
+String orderId = "testOrder";
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+TransactionResponseData response = client.getTransaction(secretKey);
+~~~
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Ответ:
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+~~~
+{
+  "code": "SUCCESS",
+  "transaction": {
+    "id": 120059,
+    "orderId": "testOrder",
+    "status": {
+      "value": "SUCCESS",
+      "date": "2019-07-11T17:45:13+03:00"
+    },
+    "paymentMethod": "acquiring",
+    "paymentParams": {
+      "rrn": 935014591810,
+      "authCode": 25984
+    },
+    "amount": 12500.5,
+    "comment": "Покупка шоколадного торта",
+    "extra": {
+      "additionalInfo": "Sweet Cake"
+    }
+  }
+}
+~~~
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Оформление возврата по платежу
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+Метод `createRefund` создает возврат по заказу.
+В параметрах нужно указать:
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+- `orderId` - идентификатор заказа;
+- `refundId` - идентификатор заказа;
+- `refund` - экземпляр класса `Refund`;
 
-## License
-For open source projects, say how it is licensed.
+~~~ java
+String orderId = "testOrder";
+String refundId = "testRefund";
+Refund refund = new Refund(BigDecimal.valueOf(150));
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+OrderRefundResponseData response = client.createRefund(orderId, refundId, refund);
+~~~
+
+Ответ:
+
+~~~
+{
+  "code": "SUCCESS",
+  "amount": 150,
+  "refundStatus": "IN_PROGRESS"
+}
+~~~
+
+### Статус возврата
+
+Метод `getRefundInfo` создает возврат по заказу.
+В параметрах нужно указать:
+
+- `orderId` - идентификатор заказа;
+- `refundId` - идентификатор заказа;
+
+~~~ java
+String orderId = "testOrder";
+String refundId = "testRefund";
+
+OrderRefundResponseData response = client.getRefundInfo(orderId, refundId);
+~~~
+
+### Парсинг уведомления
+
+Метод `parsingPaymentNotice` преобразует JSON-ответ в экземпляр класса `PaymentNotice`.
+В параметрах нужно указать:
+
+- `jsonPaymentNotice` - тело ответа;
+
+~~~ java
+String json = "{\"event\": \"payment\",\"transaction\":{\"id\": 120059,}, ...}";
+
+PaymentNotice response = client.parsingPaymentNotice(orderId, json);
+~~~
+
+### Обработка уведомлений
+
+Метод `checkEventSignature` проверяет подпись уведомления о платеже.
+В параметрах нужно указать:
+
+- `signature` - содержимое заголовка x-api-signature-sha256;
+- `eventBody` - разобранный JSON из тела запроса преобразованный в экземпляр класса `PaymentNotice`;
+- `publicId` - идентификатор мерчанта.
+
+~~~ java
+String json = "{\"event\": \"payment\",\"transaction\":{\"id\": 120059,}, ...}";
+PaymentNotice response = client.parsingPaymentNotice(orderId, json);
+
+String signature = "***";
+String publicId = "***";
+
+client.checkEventSignature(signature, eventBody, publicId); // true or false
+~~~
