@@ -42,10 +42,11 @@ public class OrderRefundQueryDescriptionTest {
     @Test
     void checkRequestParametersWithRefundFull() throws Exception {
         String testUrl = "https://test.ecom.raiffeisen.ru/api/payments/v1/orders/order-test/refunds/refund-test";
-        String requestBodyJson = "{\"amount\":188,\"receipt\":{\"customer\":{\"email\":\"mail@mail.com\",\"name\":\"Иванов Иван Иванович\"},\"items\":[{\"name\":\"Шоколадный торт\",\"price\":22.5,\"quantity\":4.2,\"amount\":94.5,\"paymentObject\":\"COMMODITY\",\"paymentMode\":\"FULL_PREPAYMENT\",\"measurementUnit\":\"шт\",\"nomenclatureCode\":\"00 00 00 01 00 21 FA 41 00 23 05 41 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 12 00 AB 00\",\"vatType\":\"VAT0\",\"agentType\":null,\"supplierInfo\":null}]}}";
+        String requestBodyJson = "{\"amount\":188,\"receipt\":{\"onlinePayment\":true,\"customer\":{\"email\":\"mail@mail.com\",\"name\":\"Иванов Иван Иванович\"},\"items\":[{\"name\":\"Шоколадный торт\",\"price\":22.5,\"quantity\":4.2,\"amount\":94.5,\"paymentObject\":\"COMMODITY\",\"paymentMode\":\"FULL_PREPAYMENT\",\"measurementUnit\":\"шт\",\"nomenclatureCode\":\"00 00 00 01 00 21 FA 41 00 23 05 41 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 12 00 AB 00\",\"vatType\":\"VAT0\",\"agentType\":null,\"supplierInfo\":null}]}}";
 
         Refund refund = new Refund(BigDecimal.valueOf(188));
         Receipt receipt = new Receipt();
+        receipt.setOnlinePayment(true);
         receipt.setCustomer(new ReceiptCustomer("mail@mail.com", "Иванов Иван Иванович"));
         CheckPosition checkPosition = new CheckPosition("check-test-1",
                 BigDecimal.valueOf(22.5),
