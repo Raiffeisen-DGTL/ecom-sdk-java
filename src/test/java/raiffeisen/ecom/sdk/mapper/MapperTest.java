@@ -104,6 +104,7 @@ public class MapperTest {
                 "\"amount\": 150," +
                 "\"refundStatus\": \"IN_PROGRESS\"," +
                 "\"receipt\": {" +
+                "\"onlinePayment\": true," +
                 "\"customer\": {" +
                 "\"email\": \"customer@test.ru\"," +
                 "\"name\": \"Иванов Иван Иванович\"" +

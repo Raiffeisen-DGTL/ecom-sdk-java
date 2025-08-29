@@ -7,6 +7,10 @@ import java.util.List;
  */
 public class Receipt {
     /**
+     * Признак расчета в Интернете
+     */
+    private Boolean onlinePayment;
+    /**
      * Данные о покупателе
      */
     private ReceiptCustomer customer;
@@ -17,6 +21,10 @@ public class Receipt {
 
     public Receipt() {
     }
+
+    public Boolean getOnlinePayment() { return onlinePayment; }
+
+    public void setOnlinePayment(Boolean onlinePayment) { this.onlinePayment = onlinePayment; }
 
     public ReceiptCustomer getCustomer() {
         return customer;

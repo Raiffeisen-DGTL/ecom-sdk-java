@@ -5,14 +5,11 @@ stages:
 include:
   - project: 'acquiring/devops/pipelines'
     ref: master
-    file: '.checkmarx-java.yml'
+    file: '.appsec.yml'
 
 variables:
   APP_NAME: ecom-sdk-java
-
-checkmarx:
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  APPSEC_TEAM_ID: 47
 
 push:
   stage: deploy
